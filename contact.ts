@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
+import { GroceriesServiceProvider } from '../../providers/groceries-service/groceries-service';
+
 
 @Component({
   selector: 'page-contact',
@@ -10,28 +12,8 @@ import { AlertController } from 'ionic-angular';
 export class ContactPage {
   title : "Grocery List";
   
-  items = [
-    {
-      name: "Milk",
-      quantity: 1
-    },
-    {
-      name: "Steak",
-      quantity: 3
-    },
-    {
-      name: "Banana",
-      quantity: 2
-    },
-    {
-      name: "Salt",
-      quantity: 5
-    },
 
-  ];
-  
-
-  constructor(public navCtrl: NavController, public toastCtrl: ToastController, public alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public toastCtrl: ToastController, public alertCtrl: AlertController,public dataService: GroceriesServiceProvider) {
 
   }
 
@@ -42,8 +24,7 @@ export class ContactPage {
       duration: 3000
     });
     toast.present();
-
-    this.items.splice(index,1); /* splice index , number of item want to remove */
+    this.dataService.removeItem(index);
   }
 
   addItem(){
@@ -78,7 +59,7 @@ export class ContactPage {
           text: 'Save',
           handler: item => {
             console.log('Saved clicked', item);
-            this.items.push(item);
+            this.dataService.addItem(item);
           }
         }
       ]
@@ -113,8 +94,7 @@ export class ContactPage {
           text: 'Save',   
           handler: item => {
             console.log('Saved clicked', item);
-            console.log('Saved clicked', this.items[index]);
-            this.items[index] = item;
+            this.dataService.editItem(item,index);
           }
         }
       ]
@@ -124,6 +104,9 @@ export class ContactPage {
     
   }
 
+  loaditem(){
+    return this.dataService.getItem();
+  }
 
   showRadio(item,index) {
     let alert = this.alertCtrl.create();
@@ -142,9 +125,9 @@ export class ContactPage {
     alert.addButton('Cancel');
     alert.addButton({
       text: 'OK',
-      handler: data => {
-        console.log('Saved clicked Item', data);
-        this.items[index].quantity = data;
+      handler: item => {
+        console.log('Saved clicked Item', item);
+        this.dataService.editQuantity(item,index);
         
       }
     });
